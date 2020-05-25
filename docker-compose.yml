@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  redirector:
+    build: .
+    image: wwmoraes/redirector
+    ports:
+    - 8080:8080
+    - 8081:8081
+    environment:
+      URL: https://artero.dev
+      KEY_FILE: /privkey.pem
+      CERT_FILE: /fullchain.pem
+    volumes:
+    - type: bind
+      source: ./privkey.pem
+      target: /privkey.pem
+    - type: bind
+      source: ./fullchain.pem
+      target: /fullchain.pem
