@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -10,6 +12,18 @@ import (
 )
 
 var targetURL = ""
+
+func printError(err error) {
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+func fatalError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func getEnv(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
@@ -26,11 +40,34 @@ func IsUrl(str string) bool {
 func serve_https(wg *sync.WaitGroup) {
 	host := os.Getenv("HTTPS_HOST")
 	port := getEnv("HTTPS_PORT", "8081")
-	keyFile := os.Getenv("KEY_FILE")
-	certFile := os.Getenv("CERT_FILE")
+
+	keyFilePath := os.Getenv("KEY_FILE")
+	certFilePath := os.Getenv("CERT_FILE")
+
+	if key, ok := os.LookupEnv("KEY"); ok {
+		log.Println("creating temporary key file...")
+		keyFile, err := ioutil.TempFile("", "")
+		printError(err)
+		keyData, err := base64.StdEncoding.DecodeString(key)
+		printError(err)
+		_, err = keyFile.Write(keyData)
+		printError(err)
+		keyFilePath = keyFile.Name()
+	}
+
+	if cert, ok := os.LookupEnv("CERT"); ok {
+		log.Println("creating temporary cert file...")
+		certData, err := base64.StdEncoding.DecodeString(cert)
+		printError(err)
+		certFile, err := ioutil.TempFile("", "")
+		printError(err)
+		_, err = certFile.Write(certData)
+		printError(err)
+		certFilePath = certFile.Name()
+	}
 
 	log.Printf("** Redirecting HTTPS from %s:%s to %s **", host, port, targetURL)
-	if err := http.ListenAndServeTLS(fmt.Sprintf("%s:%s", host, port), certFile, keyFile, nil); err != nil {
+	if err := http.ListenAndServeTLS(fmt.Sprintf("%s:%s", host, port), certFilePath, keyFilePath, nil); err != nil {
 		if os.IsNotExist(err) {
 			log.Println("error: unable to start HTTPS - did you set KEY_FILE and CERT_FILE?")
 			log.Println(err)

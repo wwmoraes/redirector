@@ -35,14 +35,16 @@ secure one, but will still run the HTTP one.
 
 All configurations are done using environment variables:
 
-| Variable Name | Default Value | Description                                                      |
-|---------------|---------------|------------------------------------------------------------------|
-| URL           |               | destination URL redirect to, e.g. <https://artero.dev>           |
-| HTTP_HOST     |               | HTTP server host                                                 |
-| HTTP_PORT     | `8080`        | HTTP server port                                                 |
-| HTTPS_HOST    |               | HTTPS server host                                                |
-| HTTPS_PORT    | `8081`        | HTTPS server port                                                |
-| KEY_FILE      |               | URL certificate private key                                      |
-| CERT_FILE     |               | URL certificate public key (must be the full chain if CA-signed) |
+| Variable Name | Default Value | Description                                                                                      |
+|---------------|---------------|--------------------------------------------------------------------------------------------------|
+| URL           |               | destination URL redirect to, e.g. <https://artero.dev>                                           |
+| HTTP_HOST     |               | HTTP server host                                                                                 |
+| HTTP_PORT     | `8080`        | HTTP server port                                                                                 |
+| HTTPS_HOST    |               | HTTPS server host                                                                                |
+| HTTPS_PORT    | `8081`        | HTTPS server port                                                                                |
+| KEY_FILE      |               | private key path for the URL certificate                                                         |
+| KEY           |               | base64-encoded private key contents for the URL certificate                                      |
+| CERT_FILE     |               | public key path for the URL certificate (must be the full chain if CA-signed)                    |
+| CERT          |               | base64-encoded public key contents for the URL certificate (must be the full chain if CA-signed) |
 
 Empty host equals `0.0.0.0`, i.e. all interfaces will be bound.
