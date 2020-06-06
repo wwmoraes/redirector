@@ -99,7 +99,8 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("received request from %s to %s://%s%s", r.RemoteAddr, r.URL.Scheme, r.Host, r.RequestURI)
-	w.Header().Add("Location", fmt.Sprintf("https://%s%s", targetURL, r.URL.Path))
+
+	http.Redirect(w, r, fmt.Sprintf("%s%s", targetURL, r.URL.Path), 301)
 }
 
 func main() {
